@@ -1,27 +1,30 @@
-import type { RootState } from '@/redux/store';
-import { useSelector, useDispatch } from 'react-redux';
-import { decrement, increment } from '@/redux/slides/counterSlide';
-import styled from 'styled-components';
-
-const Button = styled.button({
-    background: 'green',
-});
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
+import { publicRoutes } from './routes';
+import MainLayout from './layouts/MainLayout/MainLayout';
+import { Fragment } from 'react/jsx-runtime';
 
 export function App() {
-    const count = useSelector((state: RootState) => state.counter.value);
-    const dispatch = useDispatch();
-
     return (
-        <div>
+        <Router>
             <div>
-                <Button aria-label="Increment value" onClick={() => dispatch(increment())}>
-                    Increment
-                </Button>
-                <span>{count}</span>
-                <button aria-label="Decrement value" onClick={() => dispatch(decrement())}>
-                    Decrement
-                </button>
+                <Routes>
+                    {publicRoutes.map((route, index) => {
+                        const Layout = route.layout === null ? Fragment : route.layout || MainLayout;
+                        const Page = route.component;
+                        return (
+                            <Route
+                                key={index}
+                                path={route.path}
+                                element={
+                                    <Layout>
+                                        <Page />
+                                    </Layout>
+                                }
+                            />
+                        );
+                    })}
+                </Routes>
             </div>
-        </div>
+        </Router>
     );
 }
